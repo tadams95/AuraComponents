@@ -31,6 +31,7 @@
             columnClass = "slds-size_1-of-6";
         }
         
+        // Update component attributes
         component.set("v.boardSize", newSize);
         component.set("v.columnClass", columnClass);
         
@@ -43,6 +44,26 @@
         }
         component.set("v.placeholderRows", placeholderRows);
         component.set("v.placeholderCols", placeholderCols);
+        
+        // Check if game is active
+        var gameActive = component.get("v.gameActive");
+        
+        // If game is not active, refresh the board immediately
+        if (!gameActive) {
+            helper.initializeBoard(component);
+        } else {
+            // If game is active, show a toast notification that board will update on next game
+            var toastEvent = $A.get("e.force:showToast");
+            if (toastEvent) {
+                toastEvent.setParams({
+                    title: "Game Mode Changed",
+                    message: "The new game mode will take effect when you start a new game or reshuffle.",
+                    type: "info",
+                    duration: 4000
+                });
+                toastEvent.fire();
+            }
+        }
     },
     
     handleTileClick: function(component, event, helper) {
@@ -57,6 +78,27 @@
     
     submitWord: function(component, event, helper) {
         helper.validateAndScoreWord(component);
+    },
+    
+    updateBoardNow: function(component, event, helper) {
+        // Reset word selection
+        component.set("v.selectedWord", "");
+        component.set("v.isWordTooShort", true);
+        
+        // Initialize new board with current settings
+        helper.initializeBoard(component);
+        
+        // Show confirmation toast
+        var toastEvent = $A.get("e.force:showToast");
+        if (toastEvent) {
+            toastEvent.setParams({
+                title: "Board Updated",
+                message: "Game board has been updated to the new size.",
+                type: "success",
+                duration: 2000
+            });
+            toastEvent.fire();
+        }
     },
     
     startNewGame: function(component, event, helper) {

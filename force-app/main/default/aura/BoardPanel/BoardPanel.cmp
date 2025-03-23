@@ -51,6 +51,7 @@
                       placeholder="Select Game Mode"
                       options="{!v.gameModeOptions}"
                       onchange="{!c.handleGameModeChange}"
+                      disabled="{!v.gameActive &amp;&amp; v.timeRemaining > 50}"
                     />
                 </lightning:layoutItem>
                 
@@ -70,6 +71,22 @@
                     />
                 </lightning:layoutItem>
             </lightning:layout>
+            
+            <!-- Add this just below the controls section -->
+            <aura:if isTrue="{!v.gameActive}">
+                <div class="slds-text-align_center slds-text-title slds-m-bottom_small">
+                    <span class="slds-badge slds-badge_success">Game in progress</span>
+                    <aura:if isTrue="{!v.timeRemaining > 50}">
+                        <lightning:button
+                            variant="base"
+                            label="Change Board Size Now"
+                            title="Update board for current game"
+                            onclick="{!c.updateBoardNow}"
+                            class="slds-m-left_x-small"
+                        />
+                    </aura:if>
+                </div>
+            </aura:if>
             
             <!-- Game Board Grid -->
             <div class="board-container slds-m-top_medium">
