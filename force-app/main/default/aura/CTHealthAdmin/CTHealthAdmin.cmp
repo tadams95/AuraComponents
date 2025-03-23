@@ -1,52 +1,84 @@
 <aura:component implements="force:appHostable">
     <aura:attribute name="selectedTabId" type="String" default="personTab" />
     
-    <div class="slds-page-header">
-        <div class="slds-page-header__row">
-            <div class="slds-page-header__col-title">
-                <div class="slds-media">
-                    <div class="slds-media__figure">
-                        <lightning:icon iconName="standard:healthcare" alternativeText="Health" size="medium"/>
-                    </div>
-                    <div class="slds-media__body">
-                        <div class="slds-page-header__name">
-                            <div class="slds-page-header__name-title">
-                                <h1>
-                                    <span class="slds-page-header__title slds-truncate" title="CT Health Admin">CT Health Admin</span>
-                                </h1>
+    <div class="ct-container">
+        <!-- Header section with improved class names -->
+        <div class="slds-page-header ct-header">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <lightning:icon iconName="utility:heart" alternativeText="Health" size="medium"/>
+                        </div>
+                        <div class="slds-media__body">
+                            <div class="slds-page-header__name">
+                                <div class="slds-page-header__name-title">
+                                    <h1>
+                                        <span class="slds-page-header__title slds-truncate" title="CT Health Admin">CT Health Admin</span>
+                                    </h1>
+                                </div>
+                            </div>
+                            <!-- Health Status Metrics with better classes -->
+                            <div class="slds-grid slds-gutters slds-m-top_small ct-health-metrics">
+                                <div class="slds-col">
+                                    <div class="ct-status-box ct-status-green">
+                                        <div class="ct-status-label">Green</div>
+                                        <div class="ct-status-count">42</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col">
+                                    <div class="ct-status-box ct-status-yellow">
+                                        <div class="ct-status-label">Yellow</div>
+                                        <div class="ct-status-count">18</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col">
+                                    <div class="ct-status-box ct-status-orange">
+                                        <div class="ct-status-label">Orange</div>
+                                        <div class="ct-status-count">7</div>
+                                    </div>
+                                </div>
+                                <div class="slds-col">
+                                    <div class="ct-status-box ct-status-red">
+                                        <div class="ct-status-label">Red</div>
+                                        <div class="ct-status-count">3</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="slds-page-header__col-actions">
-                <div class="slds-page-header__controls">
-                    <div class="slds-page-header__control">
-                        <lightning:button label="Add New" 
-                                        iconName="utility:add" 
-                                        iconPosition="left" 
-                                        variant="brand" 
-                                        onclick="{!c.handleAddNew}"/>
+                <div class="slds-page-header__col-actions">
+                    <div class="slds-page-header__controls">
+                        <div class="slds-page-header__control">
+                            <lightning:button label="Add New" 
+                                            iconName="utility:add" 
+                                            iconPosition="left" 
+                                            variant="brand" 
+                                            class="ct-button-add"
+                                            onclick="{!c.handleAddNew}"/>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="slds-card slds-m-top_medium">
-        <lightning:tabset selectedTabId="{!v.selectedTabId}" onselect="{!c.handleTabChange}">
-            <lightning:tab label="Person View" id="personTab">
-                <div class="slds-p-around_medium">
-                    <h2 class="slds-text-heading_medium slds-m-bottom_medium">Person View Content</h2>
-                    <p>Content for Person View will appear here.</p>
-                </div>
-            </lightning:tab>
-            <lightning:tab label="Location View" id="locationTab">
-                <div class="slds-p-around_medium">
-                    <h2 class="slds-text-heading_medium slds-m-bottom_medium">Location View Content</h2>
-                    <p>Content for Location View will appear here.</p>
-                </div>
-            </lightning:tab>
-        </lightning:tabset>
+        
+        <!-- Tabs section with improved spacing -->
+        <div class="slds-card slds-m-top_medium ct-tabs-container">
+            <lightning:tabset selectedTabId="{!v.selectedTabId}" onselect="{!c.handleTabChange}" class="ct-tabs">
+                <lightning:tab label="Person View" id="personTab">
+                    <div class="slds-p-around_medium ct-tab-content">
+                        <h2 class="slds-text-heading_medium slds-m-bottom_medium">Person View Content</h2>
+                        <p>Content for Person View will appear here.</p>
+                    </div>
+                </lightning:tab>
+                <lightning:tab label="Location View" id="locationTab">
+                    <div class="slds-p-around_medium ct-tab-content">
+                        <h2 class="slds-text-heading_medium slds-m-bottom_medium">Location View Content</h2>
+                        <p>Content for Location View will appear here.</p>
+                    </div>
+                </lightning:tab>
+            </lightning:tabset>
+        </div>
     </div>
 </aura:component>
