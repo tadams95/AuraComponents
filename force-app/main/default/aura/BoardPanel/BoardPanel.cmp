@@ -21,6 +21,8 @@
     <aura:attribute name="gameTimerId" type="Object"/>
     <aura:attribute name="timerClass" type="String" default="slds-text-color_default"/>
     <aura:attribute name="isWordTooShort" type="Boolean" default="true"/>
+    <aura:attribute name="submittedWords" type="List" default="[]"/>
+    <aura:attribute name="duplicateWordError" type="Boolean" default="false"/>
     
     <lightning:card title="Word Shuffle" iconName="utility:puzzle">
         <!-- Game Stats Section -->
@@ -111,6 +113,11 @@
         <div class="slds-p-horizontal_medium slds-p-bottom_medium">
             <div class="selected-word slds-box slds-theme_default slds-text-align_center slds-text-heading_medium slds-m-top_small slds-m-bottom_small">
                 {!v.selectedWord}
+                <aura:if isTrue="{!v.duplicateWordError}">
+                    <div class="slds-text-color_error slds-text-heading_small">
+                        Word already used!
+                    </div>
+                </aura:if>
             </div>
             <div class="slds-text-align_center">
                 <lightning:button 
@@ -120,6 +127,26 @@
                     disabled="{!v.isWordTooShort || !v.gameActive}"
                     onclick="{!c.submitWord}" 
                 />
+            </div>
+        </div>
+        
+        <!-- Word History Section -->
+        <div class="slds-p-horizontal_medium slds-p-bottom_medium">
+            <div class="slds-text-heading_small slds-m-bottom_x-small">
+                Words Found: <span class="slds-badge slds-badge_lightest">{!v.submittedWords.length}</span>
+            </div>
+            <div class="word-history-container slds-box slds-box_xx-small slds-theme_shade">
+                <aura:iteration items="{!v.submittedWords}" var="word">
+                    <span class="word-chip">
+                        {!word.text} 
+                        <span class="slds-badge slds-badge_inverse word-score">+{!word.score}</span>
+                    </span>
+                </aura:iteration>
+                <aura:if isTrue="{!empty(v.submittedWords)}">
+                    <div class="slds-text-align_center slds-text-color_weak slds-p-around_medium">
+                        No words submitted yet
+                    </div>
+                </aura:if>
             </div>
         </div>
     </lightning:card>

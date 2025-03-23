@@ -60,18 +60,33 @@
     },
     
     startNewGame: function(component, event, helper) {
+        console.log('Starting new game');
+        
+        // First clear any existing timer
+        helper.clearGameTimer(component);
+        
         // Reset game state and start a new game
         component.set("v.score", 0);
-        component.set("v.timeRemaining", 60);
+        component.set("v.timeRemaining", 60); // Reset to 60 seconds
+        console.log('Time remaining set to 60');
+        
         component.set("v.gameActive", true);
         component.set("v.selectedWord", "");
         component.set("v.isWordTooShort", true);
         component.set("v.timerClass", "slds-text-color_default");
+        component.set("v.submittedWords", []);
+        component.set("v.duplicateWordError", false);
         
         var gameMode = component.find("gameMode").get("v.value");
+        
         // Initialize a new game board
         helper.initializeBoard(component);
-        helper.startGameTimer(component);
+        
+        // Ensure the DOM is updated before starting timer
+        setTimeout(function() {
+            // Start timer AFTER all state is reset and DOM is updated
+            helper.startGameTimer(component);
+        }, 100);
         
         // Fire application event or call helper method to start a new game
         var startGameEvent = $A.get("e.c:GameStartEvent");

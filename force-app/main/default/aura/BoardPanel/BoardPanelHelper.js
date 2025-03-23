@@ -99,10 +99,45 @@
             return;
         }
         
-        // In a real implementation, you'd validate against a dictionary
-        // For this example, we'll just score based on word length
+        // Check for duplicate words
+        var submittedWords = component.get("v.submittedWords");
+        var isDuplicate = false;
+        
+        for(var i = 0; i < submittedWords.length; i++) {
+            if(submittedWords[i].text.toLowerCase() === selectedWord.toLowerCase()) {
+                isDuplicate = true;
+                break;
+            }
+        }
+        
+        if(isDuplicate) {
+            // Show duplicate word error
+            component.set("v.duplicateWordError", true);
+            // Clear error after 2 seconds
+            setTimeout($A.getCallback(function() {
+                if(component.isValid()) {
+                    component.set("v.duplicateWordError", false);
+                }
+            }), 2000);
+            return;
+        }
+        
+        // Calculate score based on word length
+        var wordScore = selectedWord.length * 10;
+        
+        // Add to list of submitted words
+        submittedWords.push({
+            text: selectedWord,
+            score: wordScore,
+            timestamp: Date.now()
+        });
+        
+        // Update total score
         var score = component.get("v.score");
-        score += (selectedWord.length * 10);
+        score += wordScore;
+        
+        // Update component attributes
+        component.set("v.submittedWords", submittedWords);
         component.set("v.score", score);
         
         // Clear selections
@@ -119,42 +154,60 @@
     },
     
     startGameTimer: function(component) {
+        console.log('Starting game timer');
+        
         // Clear any existing timer
         this.clearGameTimer(component);
         
-        // Reset timer class
+        // Reset timer class and ensure gameActive is true
         component.set("v.timerClass", "slds-text-color_default");
+        component.set("v.gameActive", true);
         
-        var that = this; // Store reference to helper
+        // Use Function.bind to maintain correct 'this' context
+        var self = this;
         
-        // Set up timer
-        var gameTimerId = setInterval($A.getCallback(function() {
-            var timeRemaining = component.get("v.timeRemaining");
-            timeRemaining--;
-            
-            // Update timer class when time is running low
-            if (timeRemaining <= 10) {
-                component.set("v.timerClass", "slds-text-color_error");
-            }
-            
-            component.set("v.timeRemaining", timeRemaining);
-            
-            if(timeRemaining <= 0) {
-                // Game over
-                component.set("v.gameActive", false);
-                that.clearGameTimer(component);
-                that.showGameOverMessage(component);
-            }
-        }), 1000);
+        // Set up timer with proper binding and logging
+        var gameTimerId = window.setInterval(function() {
+            // Wrap the callback in $A.getCallback to ensure it runs in Aura context
+            $A.getCallback(function() {
+                if (!component.isValid()) {
+                    console.log('Component not valid, clearing timer');
+                    window.clearInterval(gameTimerId);
+                    return;
+                }
+                
+                var timeRemaining = component.get("v.timeRemaining");
+                console.log('Timer tick: ' + timeRemaining);
+                timeRemaining--;
+                
+                // Update timer class when time is running low
+                if (timeRemaining <= 10) {
+                    component.set("v.timerClass", "slds-text-color_error");
+                }
+                
+                component.set("v.timeRemaining", timeRemaining);
+                
+                if (timeRemaining <= 0) {
+                    console.log('Time up! Game over.');
+                    // Game over
+                    component.set("v.gameActive", false);
+                    self.clearGameTimer(component);
+                    self.showGameOverMessage(component);
+                }
+            })();
+        }, 1000);
         
+        console.log('Timer started with ID: ' + gameTimerId);
         // Store timer ID for later cleanup
         component.set("v.gameTimerId", gameTimerId);
     },
     
     clearGameTimer: function(component) {
         var gameTimerId = component.get("v.gameTimerId");
-        if(gameTimerId) {
-            clearInterval(gameTimerId);
+        if (gameTimerId) {
+            console.log('Clearing timer with ID: ' + gameTimerId);
+            window.clearInterval(gameTimerId);
+            component.set("v.gameTimerId", null);
         }
     },
     
@@ -171,5 +224,13 @@
             });
             toastEvent.fire();
         }
+    },
+    
+    startNewGame: function(component) {
+        // Reset submitted words list
+        component.set("v.submittedWords", []);
+        component.set("v.duplicateWordError", false);
+        
+        // ...any other game reset logic...
     }
 })
