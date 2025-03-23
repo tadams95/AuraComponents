@@ -1,7 +1,7 @@
 ({
     doInit: function(component, event, helper) {
-        // Initialize the game when component loads
-        helper.initializeBoard(component);
+        // Setup placeholder for the board
+        helper.setupPlaceholders(component);
     },
     
     myAction: function(component, event, helper) {
@@ -67,13 +67,40 @@
     },
     
     handleTileClick: function(component, event, helper) {
-        if (!component.get("v.gameActive")) return;
+        // Only process clicks if the game is active and not over
+        if (!component.get("v.gameActive") || component.get("v.gameOver")) {
+            return;
+        }
         
         var clickedElement = event.currentTarget;
-        var rowIndex = parseInt(clickedElement.dataset.row);
-        var colIndex = parseInt(clickedElement.dataset.col);
+        var rowIndex = parseInt(clickedElement.dataset.row, 10);
+        var colIndex = parseInt(clickedElement.dataset.col, 10);
+        var clickedWord = clickedElement.dataset.word;
         
-        helper.toggleTileSelection(component, rowIndex, colIndex);
+        // Check if this tile is already revealed
+        var board = component.get("v.board");
+        if (board[rowIndex][colIndex].revealed) {
+            return; // Tile already revealed, do nothing
+        }
+        
+        // Mark this tile as revealed
+        board[rowIndex][colIndex].revealed = true;
+        component.set("v.board", board);
+        
+        // Track revealed tiles
+        var revealedTiles = component.get("v.revealedTiles") || [];
+        revealedTiles.push({row: rowIndex, col: colIndex});
+        component.set("v.revealedTiles", revealedTiles);
+        
+        // Check if the clicked word matches the correct word
+        var correctWord = component.get("v.correctWord");
+        if (clickedWord === correctWord) {
+            // Player found the correct word
+            helper.handleCorrectWord(component);
+        } else {
+            // Wrong guess
+            helper.handleWrongGuess(component);
+        }
     },
     
     submitWord: function(component, event, helper) {
@@ -102,43 +129,7 @@
     },
     
     startNewGame: function(component, event, helper) {
-        console.log('Starting new game');
-        
-        // First clear any existing timer
-        helper.clearGameTimer(component);
-        
-        // Reset game state and start a new game
-        component.set("v.score", 0);
-        component.set("v.timeRemaining", 60); // Reset to 60 seconds
-        console.log('Time remaining set to 60');
-        
-        component.set("v.gameActive", true);
-        component.set("v.selectedWord", "");
-        component.set("v.isWordTooShort", true);
-        component.set("v.timerClass", "slds-text-color_default");
-        component.set("v.submittedWords", []);
-        component.set("v.duplicateWordError", false);
-        
-        var gameMode = component.find("gameMode").get("v.value");
-        
-        // Initialize a new game board
-        helper.initializeBoard(component);
-        
-        // Ensure the DOM is updated before starting timer
-        setTimeout(function() {
-            // Start timer AFTER all state is reset and DOM is updated
-            helper.startGameTimer(component);
-        }, 100);
-        
-        // Fire application event or call helper method to start a new game
-        var startGameEvent = $A.get("e.c:GameStartEvent");
-        if (startGameEvent) {
-            startGameEvent.setParams({
-                "gameMode": gameMode,
-                "isNewGame": true
-            });
-            startGameEvent.fire();
-        }
+        helper.initializeGame(component);
     },
     
     handleSelectedWordChange: function(component, event, helper) {

@@ -2,27 +2,27 @@
 }
 
 .THIS .board-container {
-    max-width: 500px;
+    max-width: 600px;
     margin: 0 auto;
 }
 
 .THIS .game-tile {
-    height: 60px;
-    border-radius: 4px;
-    background-color: #f3f2f2;
-    border: 1px solid #dddbda;
+    height: 70px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+    background-color: #f3f2f2;
+    border: 1px solid #dddbda;
 }
 
 .THIS .game-tile:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background-color: #eef1f6;
-    transform: translateY(-2px);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 /* Selected tile styling */
@@ -74,18 +74,18 @@
 }
 
 .THIS .word-history-container {
-    max-height: 150px;
+    min-height: 80px;
+    max-height: 120px;
     overflow-y: auto;
     padding: 0.5rem;
 }
 
 .THIS .word-chip {
     display: inline-block;
-    background-color: #fff;
-    border: 1px solid #dddbda;
-    border-radius: 0.25rem;
-    padding: 0.25rem 0.5rem;
-    margin: 0.25rem;
+    background-color: #f3f3f3;
+    padding: 4px 8px;
+    margin: 4px;
+    border-radius: 16px;
     font-size: 0.875rem;
     transition: all 0.2s ease;
 }
@@ -96,7 +96,7 @@
 }
 
 .THIS .word-score {
-    margin-left: 0.25rem;
+    margin-left: 4px;
     font-size: 0.75rem;
 }
 
@@ -109,6 +109,35 @@
 
 .THIS .slds-text-color_error {
     animation: pulse 1s infinite;
+}
+
+.THIS .slds-badge_success {
+    background-color: #4bca81;
+    color: white;
+}
+
+.THIS .slds-theme_success {
+    background-color: #4bca81;
+    color: white;
+}
+
+.THIS .slds-theme_error {
+    background-color: #c23934;
+    color: white;
+}
+
+.THIS .slds-theme_info {
+    background-color: #706e6b;
+    color: white;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    animation: pulse-gentle 2s infinite;
+}
+
+@keyframes pulse-gentle {
+    0% { box-shadow: 0 0 0 0 rgba(112, 110, 107, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(112, 110, 107, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(112, 110, 107, 0); }
 }
 
 @media screen and (max-width: 768px) {
