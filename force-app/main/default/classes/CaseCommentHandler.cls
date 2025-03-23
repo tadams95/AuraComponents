@@ -25,6 +25,30 @@ public class CaseCommentHandler {
     }
     
     /**
+     * Updates the Description field for all Cases with Reason = 'Breakdown' and Status = 'Working'
+     * @return Number of Cases successfully updated
+     */
+    public static Integer updateDescriptionOnBreakdownCases() {
+        return updateDescriptionOnBreakdownCases('In-Progress');
+    }
+    
+    /**
+     * Updates the Description field for all Cases with Reason = 'Breakdown' and Status = 'Working'
+     * @param descriptionText The text to set as Description
+     * @return Number of Cases successfully updated
+     */
+    public static Integer updateDescriptionOnBreakdownCases(String descriptionText) {
+        // Query cases with Reason = 'Breakdown' and Status = 'Working'
+        List<Case> breakdownCases = [
+            SELECT Id, Description, Reason, Status 
+            FROM Case 
+            WHERE Reason = 'Breakdown' AND Status = 'Working'
+        ];
+        
+        return updateDescriptionOnCases(breakdownCases, descriptionText);
+    }
+    
+    /**
      * Updates the Description field for a list of Cases
      * @param casesToUpdate List of Cases to update
      * @param descriptionText The text to set as Description
