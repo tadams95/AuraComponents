@@ -25,6 +25,14 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* Selected tile styling */
+.THIS .game-tile.selected {
+    background-color: #0070d2;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 .THIS .placeholder-grid .game-tile {
     background-color: #f9f9f9;
     color: #dddbda;
@@ -56,6 +64,24 @@
     display: flex;
     align-items: flex-end;
     padding-bottom: 0.125rem;
+}
+
+.THIS .selected-word {
+    min-height: 50px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border: 2px dashed #dddbda;
+}
+
+/* Animation for timer when running low */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.THIS .slds-text-color_error {
+    animation: pulse 1s infinite;
 }
 
 @media screen and (max-width: 768px) {

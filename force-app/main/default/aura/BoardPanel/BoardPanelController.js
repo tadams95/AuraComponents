@@ -1,12 +1,19 @@
 ({
-    myAction : function(component, event, helper) {
-
+    doInit: function(component, event, helper) {
+        // Initialize the game when component loads
+        helper.initializeBoard(component);
     },
-    startGame : function(component, event, helper) {
+    
+    myAction: function(component, event, helper) {
+        // Empty placeholder method
+    },
+    
+    startGame: function(component, event, helper) {
         // Initialize or reshuffle the board
         helper.initializeBoard(component);
     },
-    handleGameModeChange : function(component, event, helper) {
+    
+    handleGameModeChange: function(component, event, helper) {
         // Get the selected value
         var selectedValue = event.getParam("value");
         var newSize = 4; // default to medium
@@ -37,11 +44,34 @@
         component.set("v.placeholderRows", placeholderRows);
         component.set("v.placeholderCols", placeholderCols);
     },
+    
+    handleTileClick: function(component, event, helper) {
+        if (!component.get("v.gameActive")) return;
+        
+        var clickedElement = event.currentTarget;
+        var rowIndex = parseInt(clickedElement.dataset.row);
+        var colIndex = parseInt(clickedElement.dataset.col);
+        
+        helper.toggleTileSelection(component, rowIndex, colIndex);
+    },
+    
+    submitWord: function(component, event, helper) {
+        helper.validateAndScoreWord(component);
+    },
+    
     startNewGame: function(component, event, helper) {
         // Reset game state and start a new game
+        component.set("v.score", 0);
+        component.set("v.timeRemaining", 60);
+        component.set("v.gameActive", true);
+        component.set("v.selectedWord", "");
+        component.set("v.isWordTooShort", true);
+        component.set("v.timerClass", "slds-text-color_default");
+        
         var gameMode = component.find("gameMode").get("v.value");
         // Initialize a new game board
         helper.initializeBoard(component);
+        helper.startGameTimer(component);
         
         // Fire application event or call helper method to start a new game
         var startGameEvent = $A.get("e.c:GameStartEvent");
@@ -52,5 +82,11 @@
             });
             startGameEvent.fire();
         }
+    },
+    
+    handleSelectedWordChange: function(component, event, helper) {
+        var selectedWord = component.get("v.selectedWord");
+        var isWordTooShort = selectedWord.length < 3;
+        component.set("v.isWordTooShort", isWordTooShort);
     }
 })
