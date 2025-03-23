@@ -6,6 +6,15 @@
         // Get the board size
         var size = component.get("v.boardSize");
         
+        // If a game mode is selected, update the columnClass accordingly
+        if (size === 3) {
+            component.set("v.columnClass", "slds-size_1-of-3");
+        } else if (size === 4) {
+            component.set("v.columnClass", "slds-size_1-of-4");
+        } else if (size === 6) {
+            component.set("v.columnClass", "slds-size_1-of-6");
+        }
+        
         // Sample letters for demonstration
         var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         

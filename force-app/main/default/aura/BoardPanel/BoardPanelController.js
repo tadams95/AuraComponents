@@ -10,17 +10,22 @@
         // Get the selected value
         var selectedValue = event.getParam("value");
         var newSize = 4; // default to medium
+        var columnClass = "slds-size_1-of-4"; // default to 4 columns
         
         // Update board size based on game mode
         if(selectedValue === "easy") {
             newSize = 3;
+            columnClass = "slds-size_1-of-3";
         } else if(selectedValue === "medium") {
             newSize = 4;
+            columnClass = "slds-size_1-of-4";
         } else if(selectedValue === "hard") {
-            newSize = 5;
+            newSize = 6;
+            columnClass = "slds-size_1-of-6";
         }
         
         component.set("v.boardSize", newSize);
+        component.set("v.columnClass", columnClass);
         
         // Update placeholder arrays for the empty grid
         var placeholderRows = [];

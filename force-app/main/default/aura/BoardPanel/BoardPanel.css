@@ -30,6 +30,22 @@
     color: #dddbda;
 }
 
+/* Adjust tile size based on grid size */
+.THIS .slds-size_1-of-3 .game-tile {
+    height: 70px;
+    font-size: 1.5rem;
+}
+
+.THIS .slds-size_1-of-4 .game-tile {
+    height: 60px;
+    font-size: 1.25rem;
+}
+
+.THIS .slds-size_1-of-6 .game-tile {
+    height: 50px;
+    font-size: 1rem;
+}
+
 .THIS .buttons-container {
     display: flex;
     justify-content: center;
@@ -61,5 +77,12 @@
     
     .THIS .controls-alignment {
         margin-top: 0.5rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .THIS .slds-size_1-of-6 .game-tile {
+        height: 40px;
+        font-size: 0.875rem;
     }
 }
