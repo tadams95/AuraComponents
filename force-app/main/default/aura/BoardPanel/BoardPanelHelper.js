@@ -32,7 +32,8 @@
                     letter: letter,
                     rowIndex: i,
                     colIndex: j,
-                    selected: false
+                    selected: false,
+                    selectionTimestamp: 0 // Add timestamp for tracking selection order
                 });
             }
             board.push(row);
@@ -47,7 +48,15 @@
         var cell = board[rowIndex][colIndex];
         
         // Toggle selection state
-        cell.selected = !cell.selected;
+        if (!cell.selected) {
+            // If selecting a new tile, set timestamp
+            cell.selected = true;
+            cell.selectionTimestamp = Date.now();
+        } else {
+            // If deselecting, clear timestamp
+            cell.selected = false;
+            cell.selectionTimestamp = 0;
+        }
         
         // Update the board
         component.set("v.board", board);
@@ -58,15 +67,26 @@
     
     updateSelectedWord: function(component) {
         var board = component.get("v.board");
-        var selectedWord = "";
+        var selectedTiles = [];
         
-        // Collect selected letters
+        // Collect all selected tiles
         for(var i = 0; i < board.length; i++) {
             for(var j = 0; j < board[i].length; j++) {
                 if(board[i][j].selected) {
-                    selectedWord += board[i][j].letter;
+                    selectedTiles.push(board[i][j]);
                 }
             }
+        }
+        
+        // Sort tiles by selection timestamp
+        selectedTiles.sort(function(a, b) {
+            return a.selectionTimestamp - b.selectionTimestamp;
+        });
+        
+        // Build the word from ordered tiles
+        var selectedWord = "";
+        for(var k = 0; k < selectedTiles.length; k++) {
+            selectedWord += selectedTiles[k].letter;
         }
         
         component.set("v.selectedWord", selectedWord);
@@ -90,6 +110,7 @@
         for(var i = 0; i < board.length; i++) {
             for(var j = 0; j < board[i].length; j++) {
                 board[i][j].selected = false;
+                board[i][j].selectionTimestamp = 0; // Reset timestamp too
             }
         }
         component.set("v.board", board);
