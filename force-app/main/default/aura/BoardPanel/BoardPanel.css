@@ -1,2 +1,65 @@
 .THIS {
 }
+
+.THIS .board-container {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.THIS .game-tile {
+    height: 60px;
+    border-radius: 4px;
+    background-color: #f3f2f2;
+    border: 1px solid #dddbda;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.THIS .game-tile:hover {
+    background-color: #eef1f6;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.THIS .placeholder-grid .game-tile {
+    background-color: #f9f9f9;
+    color: #dddbda;
+}
+
+.THIS .buttons-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.THIS .controls-alignment {
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 0.125rem;
+}
+
+@media screen and (max-width: 768px) {
+    .THIS .buttons-container {
+        flex-direction: column;
+    }
+    
+    .THIS .buttons-container .slds-button {
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .THIS .controls-layout {
+        flex-direction: column;
+    }
+    
+    .THIS .controls-alignment {
+        margin-top: 0.5rem;
+    }
+}

@@ -4,11 +4,17 @@
         {'label': 'Medium', 'value': 'medium'},
         {'label': 'Hard', 'value': 'hard'}
     ]"/>
+    <aura:attribute name="board" type="List" default="[]"/>
+    <aura:attribute name="boardSize" type="Integer" default="4"/>
+    <!-- Placeholder arrays for empty grid -->
+    <aura:attribute name="placeholderRows" type="List" default="[1,2,3,4]"/>
+    <aura:attribute name="placeholderCols" type="List" default="[1,2,3,4]"/>
     
     <lightning:card title="Word Shuffle" iconName="utility:puzzle">
         <div class="slds-p-horizontal_medium">
-            <div class="slds-grid slds-gutters slds-wrap">
-                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-3 slds-p-bottom_medium">
+            <!-- Horizontally Aligned Controls Section -->
+            <lightning:layout horizontalAlign="center" multipleRows="false" class="slds-m-bottom_medium controls-layout">
+                <lightning:layoutItem size="4" padding="horizontal-small">
                     <lightning:combobox
                       name="gameMode"
                       label="Game Mode"
@@ -17,24 +23,55 @@
                       options="{!v.gameModeOptions}"
                       onchange="{!c.handleGameModeChange}"
                     />
-                </div>
-                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1">
-                    <div class="slds-button-group" role="group">
-                        <lightning:button 
-                          variant="brand"
-                          label="Start New Game" 
-                          title="Start New Game"
-                          onclick="{!c.startNewGame}" 
-                          class="slds-m-right_x-small"
-                        />
-                        <lightning:button 
-                          variant="neutral"
-                          label="Reshuffle" 
-                          title="Reshuffle"
-                          onclick="{!c.startGame}" 
-                        />
+                </lightning:layoutItem>
+                
+                <lightning:layoutItem padding="horizontal-small" flexibility="auto" class="controls-alignment">
+                    <lightning:button 
+                      variant="brand"
+                      label="Start New Game" 
+                      title="Start New Game"
+                      onclick="{!c.startNewGame}" 
+                      class="slds-m-right_x-small"
+                    />
+                    <lightning:button 
+                      variant="neutral"
+                      label="Reshuffle" 
+                      title="Reshuffle"
+                      onclick="{!c.startGame}"
+                    />
+                </lightning:layoutItem>
+            </lightning:layout>
+            
+            <!-- Game Board Grid -->
+            <div class="board-container slds-m-top_medium">
+                <aura:iteration items="{!v.board}" var="row" indexVar="rowIndex">
+                    <div class="slds-grid slds-gutters_small slds-p-vertical_x-small">
+                        <aura:iteration items="{!row}" var="cell" indexVar="colIndex">
+                            <div class="slds-col slds-size_1-of-4">
+                                <div class="game-tile slds-box slds-box_small slds-theme_default slds-text-align_center slds-text-heading_medium">
+                                    {!cell.letter}
+                                </div>
+                            </div>
+                        </aura:iteration>
                     </div>
-                </div>
+                </aura:iteration>
+                
+                <!-- Placeholder grid if board is empty -->
+                <aura:if isTrue="{!empty(v.board)}">
+                    <div class="placeholder-grid">
+                        <aura:iteration items="{!v.placeholderRows}" var="row">
+                            <div class="slds-grid slds-gutters_small slds-p-vertical_x-small">
+                                <aura:iteration items="{!v.placeholderCols}" var="col">
+                                    <div class="slds-col slds-size_1-of-4">
+                                        <div class="game-tile slds-box slds-box_small slds-theme_default slds-text-align_center">
+                                            &nbsp;
+                                        </div>
+                                    </div>
+                                </aura:iteration>
+                            </div>
+                        </aura:iteration>
+                    </div>
+                </aura:if>
             </div>
         </div>
     </lightning:card>
