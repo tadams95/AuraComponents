@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "paths": {
+      "c/*": ["force-app/main/default/lwc/*"],
+      "lightning/platformShowToastEvent": ["node_modules/@salesforce/platform-show-toast-event"]
+    }
+  },
+  "include": ["**/*", "**/*.js", "**/*.jsx"],
+  "exclude": ["node_modules", "**/__mocks__", "**/__tests__"]
+}

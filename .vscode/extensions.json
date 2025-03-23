@@ -1,9 +1,11 @@
 {
   "recommendations": [
     "salesforce.salesforcedx-vscode",
-    "redhat.vscode-xml",
+    "salesforce.salesforcedx-vscode-core",
+    "salesforce.salesforcedx-vscode-apex",
+    "salesforce.salesforcedx-vscode-lightning",
+    "salesforce.salesforcedx-vscode-lwc",
     "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
-    "financialforce.lana"
+    "esbenp.prettier-vscode"
   ]
 }
