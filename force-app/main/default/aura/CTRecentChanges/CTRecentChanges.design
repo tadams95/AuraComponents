@@ -1,0 +1,4 @@
+<design:component>
+    <design:attribute name="recordType" label="Record Type" description="Type of records to display (person or location)" default="person" />
+    <design:attribute name="emptyMessage" label="Empty Message" description="Message to display when no records are found" default="No recent changes found" />
+</design:component>

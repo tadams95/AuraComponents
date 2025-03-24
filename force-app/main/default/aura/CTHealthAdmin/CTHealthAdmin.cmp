@@ -111,14 +111,16 @@
             <lightning:tabset selectedTabId="{!v.selectedTabId}" onselect="{!c.handleTabChange}" class="ct-tabs">
                 <lightning:tab label="Person View" id="personTab">
                     <div class="slds-p-around_medium ct-tab-content">
-                        <h2 class="slds-text-heading_medium slds-m-bottom_medium">Person View Content</h2>
-                        <p>Content for Person View will appear here.</p>
+                        <h2 class="slds-text-heading_medium slds-m-bottom_medium">Person View</h2>
+                        <!-- Embed CTRecentChanges component for Person view -->
+                        <c:CTRecentChanges recordType="person"/>
                     </div>
                 </lightning:tab>
                 <lightning:tab label="Location View" id="locationTab">
                     <div class="slds-p-around_medium ct-tab-content">
-                        <h2 class="slds-text-heading_medium slds-m-bottom_medium">Location View Content</h2>
-                        <p>Content for Location View will appear here.</p>
+                        <h2 class="slds-text-heading_medium slds-m-bottom_medium">Location View</h2>
+                        <!-- Embed CTRecentChanges component for Location view -->
+                        <c:CTRecentChanges recordType="location"/>
                     </div>
                 </lightning:tab>
             </lightning:tabset>

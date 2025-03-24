@@ -1,0 +1,68 @@
+<aura:component implements="force:appHostable,lightning:isUrlAddressable,force:hasRecordId,force:lightningQuickAction" controller="CTRecentChangesController">
+    
+    <!-- Attributes -->
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="searchTerm" type="String" default=""/>
+    <aura:attribute name="recordType" type="String" default="person"/>
+    <aura:attribute name="isLoading" type="Boolean" default="false"/>
+    <aura:attribute name="emptyMessage" type="String" default="No recent changes found"/>
+    
+    <!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <!-- Component Body -->
+    <lightning:card title="{! 'Recent ' + (v.recordType == 'person' ? 'Person' : 'Location') + ' Updates'}" 
+                    iconName="{! v.recordType == 'person' ? 'standard:contact' : 'standard:location'}"
+                    class="ct-recent-changes-card">
+        <!-- Card Actions -->
+        <aura:set attribute="actions">
+            <div class="slds-form-element slds-lookup ct-search-container">
+                <div class="slds-form-element__control">
+                    <lightning:input 
+                        name="search" 
+                        label="Search" 
+                        variant="label-hidden" 
+                        placeholder="Search..."
+                        value="{!v.searchTerm}"
+                        onchange="{!c.handleSearchChange}"
+                        class="ct-search-input"
+                        type="search"/>
+                </div>
+            </div>
+        </aura:set>
+        
+        <!-- Card Body -->
+        <div class="slds-p-around_medium">
+            <!-- Loading Spinner -->
+            <aura:if isTrue="{!v.isLoading}">
+                <div class="slds-is-relative">
+                    <lightning:spinner alternativeText="Loading" size="medium"/>
+                </div>
+            </aura:if>
+            
+            <!-- Data Table -->
+            <aura:if isTrue="{!not(empty(v.data))}">
+                <lightning:datatable
+                    keyField="id"
+                    data="{!v.data}"
+                    columns="{!v.columns}"
+                    hideCheckboxColumn="true"
+                    class="ct-data-table"/>
+                <aura:set attribute="else">
+                    <div class="slds-illustration slds-illustration_small slds-p-around_small">
+                        <div class="slds-text-color_weak slds-text-align_center">{!v.emptyMessage}</div>
+                    </div>
+                </aura:set>
+            </aura:if>
+        </div>
+        
+        <!-- Card Footer -->
+        <aura:set attribute="footer">
+            <div class="slds-text-align_right">
+                <lightning:button label="Refresh" iconName="utility:refresh" iconPosition="left" onclick="{!c.refreshData}" variant="brand-outline"/>
+            </div>
+        </aura:set>
+    </lightning:card>
+    
+</aura:component>
