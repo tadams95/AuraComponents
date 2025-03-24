@@ -3,49 +3,102 @@
 
     },
     
-    setupDataTable : function(component) {
-        // Define the columns for the datatable
-        const columns = [
-            {label: 'Name', fieldName: 'Name', type: 'text'},
-            {label: 'Mobile', fieldName: 'Mobile', type: 'text'},
-            {label: 'Token', fieldName: 'Token', type: 'text'},
-            {label: 'Status', fieldName: 'Status', type: 'text'},
-            {label: 'Status Update Date', fieldName: 'StatusUpdateDate', type: 'date', 
-             typeAttributes: {
-                 year: 'numeric',
-                 month: 'short',
-                 day: 'numeric',
-                 hour: '2-digit',
-                 minute: '2-digit'
-             }
-            }
-        ];
+    setupDataTable: function(component) {
+        // Get record type
+        const recordType = component.get('v.recordType');
+        
+        // Define columns based on record type
+        let columns = [];
+        
+        if (recordType === 'person') {
+            columns = [
+                {label: 'Name', fieldName: 'Name', type: 'text'},
+                {label: 'Phone', fieldName: 'Mobile', type: 'phone'},
+                {label: 'Token', fieldName: 'Token', type: 'text'},
+                {label: 'Health Status', fieldName: 'Status', type: 'text'},
+                {
+                    label: 'Status Update Date', 
+                    fieldName: 'StatusUpdateDate', 
+                    type: 'date',
+                    typeAttributes: {
+                        year: 'numeric',
+                        month: 'short',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }
+                }
+            ];
+        } else if (recordType === 'location') {
+            columns = [
+                {label: 'Name', fieldName: 'Name', type: 'text'},
+                {label: 'Status', fieldName: 'Status', type: 'text'},
+                {label: 'Pincode', fieldName: 'Pincode', type: 'text'},
+                {label: 'Address', fieldName: 'Address', type: 'text'},
+                {
+                    label: 'Red Score', 
+                    fieldName: 'RedScore', 
+                    type: 'number',
+                    typeAttributes: {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2
+                    }
+                },
+                {
+                    label: 'Status Update Date', 
+                    fieldName: 'StatusUpdateDate', 
+                    type: 'date',
+                    typeAttributes: {
+                        year: 'numeric',
+                        month: 'short',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }
+                }
+            ];
+        }
+        
+        // Set the columns
         component.set('v.columns', columns);
     },
     
-    fetchRecentChanges : function(component, searchTerm) {
-        // Create action to fetch data
-        const action = component.get('c.getRecentPersonHealthChanges');
+    fetchRecentChanges: function(component, searchTerm) {
+        // Show loading spinner
+        component.set('v.isLoading', true);
         
-        // Set parameters if needed
-        if (searchTerm) {
-            action.setParams({
-                searchTerm: searchTerm
-            });
-        }
+        const recordType = component.get('v.recordType');
         
-        // Set callback
+        // Call the Apex controller method
+        const action = component.get('c.getRecentChanges');
+        action.setParams({
+            recordType: recordType,
+            searchTerm: searchTerm
+        });
+        
         action.setCallback(this, function(response) {
             const state = response.getState();
             if (state === 'SUCCESS') {
-                const records = response.getReturnValue();
-                component.set('v.data', records);
-            } else {
-                console.error('Error fetching data:', response.getError());
+                const data = response.getReturnValue();
+                component.set('v.data', data);
+                
+                // Set empty message based on record type
+                if (data.length === 0) {
+                    const emptyMsg = 'No recent ' + (recordType === 'person' ? 'person' : 'location') + ' changes found';
+                    component.set('v.emptyMessage', emptyMsg);
+                }
+            } else if (state === 'ERROR') {
+                const errors = response.getError();
+                console.error('Error fetching recent changes:', errors);
+                
+                // Set error message
+                component.set('v.emptyMessage', 'Error fetching data. Please try again later.');
             }
+            
+            // Hide loading spinner
+            component.set('v.isLoading', false);
         });
         
-        // Enqueue the action
         $A.enqueueAction(action);
     }
 })

@@ -112,15 +112,15 @@
                 <lightning:tab label="Person View" id="personTab">
                     <div class="slds-p-around_medium ct-tab-content">
                         <h2 class="slds-text-heading_medium slds-m-bottom_medium">Person View</h2>
-                        <!-- Embed CTRecentChanges component for Person view -->
-                        <c:CTRecentChanges recordType="person"/>
+                        <!-- Added aura:id to identify this component for refreshing -->
+                        <c:CTRecentChanges recordType="person" aura:id="personRecentChanges"/>
                     </div>
                 </lightning:tab>
                 <lightning:tab label="Location View" id="locationTab">
                     <div class="slds-p-around_medium ct-tab-content">
                         <h2 class="slds-text-heading_medium slds-m-bottom_medium">Location View</h2>
-                        <!-- Embed CTRecentChanges component for Location view -->
-                        <c:CTRecentChanges recordType="location"/>
+                        <!-- Added aura:id to identify this component for refreshing -->
+                        <c:CTRecentChanges recordType="location" aura:id="locationRecentChanges"/>
                     </div>
                 </lightning:tab>
             </lightning:tabset>

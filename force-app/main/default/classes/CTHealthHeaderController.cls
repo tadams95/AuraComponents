@@ -1,72 +1,91 @@
 public with sharing class CTHealthHeaderController {
     
     @AuraEnabled
-    public static Map<String, Integer> getHealthStatusCount() {
-        Map<String, Integer> statusCountMap = new Map<String, Integer>();
+    public static Map<String, Integer> getPersonHealthStatusCount() {
+        Map<String, Integer> healthStatusCountMap = new Map<String, Integer>();
         
-        // Person health status counts
-        for (AggregateResult ar : [SELECT Health_Status__c, COUNT(Id) countRecords 
-                                  FROM Person__c 
-                                  WHERE Health_Status__c != null 
-                                  GROUP BY Health_Status__c]) {
+        // Query to count people by health status
+        for(AggregateResult ar : [
+            SELECT Health_Status__c, COUNT(Id) countOfPeople
+            FROM Person__c
+            GROUP BY Health_Status__c
+        ]) {
             String status = (String)ar.get('Health_Status__c');
-            Integer count = (Integer)ar.get('countRecords');
-            statusCountMap.put(status, count);
+            Integer statusCount = (Integer)ar.get('countOfPeople');
+            healthStatusCountMap.put(status, statusCount);
         }
         
-        // Ensure all statuses have a value
-        for (String status : new List<String>{'Green', 'Yellow', 'Orange', 'Red'}) {
-            if (!statusCountMap.containsKey(status)) {
-                statusCountMap.put(status, 0);
+        // Ensure all status values are represented, even if count is 0
+        for(String status : new List<String>{'Green', 'Yellow', 'Orange', 'Red'}) {
+            if(!healthStatusCountMap.containsKey(status)) {
+                healthStatusCountMap.put(status, 0);
             }
         }
         
-        return statusCountMap;
+        return healthStatusCountMap;
     }
     
     @AuraEnabled
     public static Map<String, Integer> getLocationHealthStatusCount() {
-        Map<String, Integer> statusCountMap = new Map<String, Integer>();
+        Map<String, Integer> healthStatusCountMap = new Map<String, Integer>();
         
-        // Location status counts
-        for (AggregateResult ar : [SELECT Status__c, COUNT(Id) countRecords 
-                                  FROM Location__c 
-                                  WHERE Status__c != null 
-                                  GROUP BY Status__c]) {
+        // Query to count locations by status
+        for(AggregateResult ar : [
+            SELECT Status__c, COUNT(Id) countOfLocations
+            FROM Location__c
+            GROUP BY Status__c
+        ]) {
             String status = (String)ar.get('Status__c');
-            Integer count = (Integer)ar.get('countRecords');
-            statusCountMap.put(status, count);
+            Integer statusCount = (Integer)ar.get('countOfLocations');
+            healthStatusCountMap.put(status, statusCount);
         }
         
-        // Ensure all statuses have a value
-        for (String status : new List<String>{'Green', 'Yellow', 'Orange', 'Red'}) {
-            if (!statusCountMap.containsKey(status)) {
-                statusCountMap.put(status, 0);
+        // Ensure all status values are represented, even if count is 0
+        for(String status : new List<String>{'Green', 'Yellow', 'Orange', 'Red'}) {
+            if(!healthStatusCountMap.containsKey(status)) {
+                healthStatusCountMap.put(status, 0);
             }
         }
         
-        return statusCountMap;
+        return healthStatusCountMap;
     }
     
     @AuraEnabled
-    public static Id createPerson(Person__c personRecord) {
+    public static Id addPerson(Person__c personRecord) {
         try {
-            System.debug('Creating person with status: ' + personRecord.Health_Status__c);
-            insert personRecord;
-            return personRecord.Id;
-        } catch (Exception e) {
-            System.debug('Error creating person: ' + e.getMessage());
-            throw new AuraHandledException('Error creating person record: ' + e.getMessage());
+            if(personRecord != null) {
+                // Set status update date to now
+                personRecord.Status_Update_Date__c = Date.today();
+                
+                // Insert the record
+                insert personRecord;
+                return personRecord.Id;
+            }
+            return null;
+        } catch(Exception e) {
+            throw new AuraHandledException('Error creating Person record: ' + e.getMessage());
         }
     }
     
     @AuraEnabled
-    public static Id createLocation(Location__c locationRecord) {
+    public static Id addLocation(Location__c locationRecord) {
         try {
-            insert locationRecord;
-            return locationRecord.Id;
-        } catch (Exception e) {
-            throw new AuraHandledException('Error creating location record: ' + e.getMessage());
+            if(locationRecord != null) {
+                // Set status update date to now
+                locationRecord.Status_Update_Date__c = Date.today();
+                
+                // Initialize Red_Score__c if it's null
+                if(locationRecord.Red_Score__c == null) {
+                    locationRecord.Red_Score__c = 0;
+                }
+                
+                // Insert the record
+                insert locationRecord;
+                return locationRecord.Id;
+            }
+            return null;
+        } catch(Exception e) {
+            throw new AuraHandledException('Error creating Location record: ' + e.getMessage());
         }
     }
 }

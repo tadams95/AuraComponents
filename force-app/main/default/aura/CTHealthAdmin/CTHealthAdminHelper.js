@@ -185,5 +185,179 @@
         component.set("v.yellowCount", statusData["Yellow"] || 0);
         component.set("v.orangeCount", statusData["Orange"] || 0);
         component.set("v.redCount", statusData["Red"] || 0);
+    },
+    
+    fetchHealthStatusCounts: function(component) {
+        // Show spinner
+        component.set('v.showSpinner', true);
+        
+        // Get the selected tab to determine which type of counts to fetch
+        const selectedTab = component.get('v.selectedTabId');
+        
+        // Determine which controller method to call based on tab
+        const methodName = selectedTab === 'personTab' ? 'c.getPersonHealthStatusCount' : 'c.getLocationHealthStatusCount';
+        
+        // Call the appropriate Apex method
+        const action = component.get(methodName);
+        
+        action.setCallback(this, function(response) {
+            const state = response.getState();
+            if (state === 'SUCCESS') {
+                const counts = response.getReturnValue();
+                
+                // Set the counts in the component attributes
+                component.set('v.greenCount', counts['Green'] || 0);
+                component.set('v.yellowCount', counts['Yellow'] || 0);
+                component.set('v.orangeCount', counts['Orange'] || 0);
+                component.set('v.redCount', counts['Red'] || 0);
+            } else if (state === 'ERROR') {
+                const errors = response.getError();
+                console.error('Error fetching health status counts:', errors);
+                // Optionally show error toast
+            }
+            
+            // Hide spinner
+            component.set('v.showSpinner', false);
+        });
+        
+        $A.enqueueAction(action);
+    },
+    
+    savePersonRecord: function(component) {
+        // Show spinner while saving
+        component.set('v.showSpinner', true);
+        
+        // Get the person record from component
+        const person = component.get('v.newPerson');
+        
+        // Simple validation - check that required fields are filled
+        if (!person.Name || !person.Mobile__c || !person.Health_Status__c) {
+            // Show error message for required fields
+            this.showToast('Error', 'Please fill in all required fields', 'error');
+            component.set('v.showSpinner', false);
+            return;
+        }
+        
+        // Call apex to save the record
+        const action = component.get('c.addPerson');
+        action.setParams({
+            personRecord: person
+        });
+        
+        action.setCallback(this, function(response) {
+            const state = response.getState();
+            if (state === 'SUCCESS') {
+                // Close the modal
+                component.set('v.isPersonModalOpen', false);
+                
+                // Show success message
+                this.showToast('Success', 'Person record created successfully', 'success');
+                
+                // Reset the form
+                component.set('v.newPerson', {
+                    'Name': '',
+                    'Mobile__c': '',
+                    'Health_Status__c': '',
+                    'Email__c': ''
+                });
+                component.set('v.personStatus', '');
+                
+                // Refresh the health status counts
+                this.fetchHealthStatusCounts(component);
+                
+                // Refresh recent changes if on person tab
+                if (component.get('v.selectedTabId') === 'personTab') {
+                    // Find and refresh the CTRecentChanges component
+                    const recentChangesComponent = component.find('personRecentChanges');
+                    if (recentChangesComponent) {
+                        recentChangesComponent.refresh();
+                    }
+                }
+            } else if (state === 'ERROR') {
+                const errors = response.getError();
+                console.error('Error saving person record:', errors);
+                
+                // Show error message
+                let errorMsg = 'An error occurred while saving the record.';
+                if (errors && errors[0] && errors[0].message) {
+                    errorMsg = errors[0].message;
+                }
+                this.showToast('Error', errorMsg, 'error');
+            }
+            
+            // Hide spinner
+            component.set('v.showSpinner', false);
+        });
+        
+        $A.enqueueAction(action);
+    },
+    
+    saveLocationRecord: function(component) {
+        // Show spinner while saving
+        component.set('v.showSpinner', true);
+        
+        // Get the location record from component
+        const location = component.get('v.newLocation');
+        
+        // Simple validation - check that required fields are filled
+        if (!location.Name || !location.Address__c || !location.Status__c) {
+            // Show error message for required fields
+            this.showToast('Error', 'Please fill in all required fields', 'error');
+            component.set('v.showSpinner', false);
+            return;
+        }
+        
+        // Call apex to save the record
+        const action = component.get('c.addLocation');
+        action.setParams({
+            locationRecord: location
+        });
+        
+        action.setCallback(this, function(response) {
+            const state = response.getState();
+            if (state === 'SUCCESS') {
+                // Close the modal
+                component.set('v.isLocationModalOpen', false);
+                
+                // Show success message
+                this.showToast('Success', 'Location record created successfully', 'success');
+                
+                // Reset the form
+                component.set('v.newLocation', {
+                    'Name': '',
+                    'Address__c': '',
+                    'Pincode__c': '',
+                    'Status__c': ''
+                });
+                component.set('v.locationStatus', '');
+                
+                // Refresh the health status counts
+                this.fetchHealthStatusCounts(component);
+                
+                // Refresh recent changes if on location tab
+                if (component.get('v.selectedTabId') === 'locationTab') {
+                    // Find and refresh the CTRecentChanges component
+                    const recentChangesComponent = component.find('locationRecentChanges');
+                    if (recentChangesComponent) {
+                        recentChangesComponent.refresh();
+                    }
+                }
+            } else if (state === 'ERROR') {
+                const errors = response.getError();
+                console.error('Error saving location record:', errors);
+                
+                // Show error message
+                let errorMsg = 'An error occurred while saving the record.';
+                if (errors && errors[0] && errors[0].message) {
+                    errorMsg = errors[0].message;
+                }
+                this.showToast('Error', errorMsg, 'error');
+            }
+            
+            // Hide spinner
+            component.set('v.showSpinner', false);
+        });
+        
+        $A.enqueueAction(action);
     }
 })
