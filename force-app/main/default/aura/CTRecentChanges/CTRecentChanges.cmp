@@ -27,6 +27,7 @@
                         value="{!v.searchTerm}"
                         onchange="{!c.handleSearchChange}"
                         class="ct-search-input"
+                        
                         type="search"/>
                 </div>
             </div>

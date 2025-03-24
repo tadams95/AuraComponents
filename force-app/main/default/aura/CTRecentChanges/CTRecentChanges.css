@@ -12,12 +12,24 @@
 
 .THIS .ct-search-input .slds-input {
     border-radius: 15px;
-    padding-left: 1rem;
+    padding-left: 2rem; /* Increased padding to make room for the search icon */
     transition: all 0.2s ease-in-out;
+    height: 2rem;
 }
 
 .THIS .ct-search-input .slds-input:focus {
     box-shadow: 0 0 3px #0070d2;
+}
+
+/* Fix for overlapping search icon and placeholder */
+.THIS .ct-search-input .slds-input-has-icon .slds-input__icon {
+    left: 0.75rem;
+    /* top: 50%; */
+    /* transform: translateY(-50%); */
+}
+
+.THIS .ct-search-input .slds-form-element__label {
+    display: none; /* Hide label to clean up appearance */
 }
 
 .THIS .ct-data-table {
