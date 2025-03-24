@@ -1,5 +1,25 @@
-<aura:component implements="force:appHostable">
+<aura:component implements="force:appHostable,lightning:isUrlAddressable,force:hasRecordId,force:lightningQuickAction" controller="CTHealthAdminController">
     <aura:attribute name="selectedTabId" type="String" default="personTab" />
+    <aura:attribute name="isPersonModalOpen" type="Boolean" default="false" />
+    <aura:attribute name="isLocationModalOpen" type="Boolean" default="false" />
+    
+    <!-- Fix the newLocation attribute definition -->
+    <aura:attribute name="newLocation" type="Object"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <!-- Add debug attribute -->
+    <aura:attribute name="debugInfo" type="String" default="" />
+    
+    <!-- Add temporary status attribute for easier binding -->
+    <aura:attribute name="locationStatus" type="String" default="" />
+    
+    <!-- Add status options array attribute -->
+    <aura:attribute name="statusOptions" type="List" default="[
+        {'label': 'Green', 'value': 'Green'},
+        {'label': 'Yellow', 'value': 'Yellow'},
+        {'label': 'Orange', 'value': 'Orange'},
+        {'label': 'Red', 'value': 'Red'}
+    ]" />
     
     <div class="ct-container">
         <!-- Header section with improved class names -->
@@ -81,4 +101,146 @@
             </lightning:tabset>
         </div>
     </div>
+    
+    <!-- Modal for Person creation -->
+    <aura:if isTrue="{!v.isPersonModalOpen}">
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        <div role="dialog" tabindex="-1" aria-labelledby="person-modal-heading" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                         onclick="{! c.closePersonModal }"
+                                         alternativeText="Close"
+                                         variant="bare-inverse"
+                                         class="slds-modal__close"/>
+                    <h2 id="person-modal-heading" class="slds-modal__title slds-hyphenate">New Person Record</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <!-- Here you would include form fields for Person__c creation -->
+                    <div class="slds-form slds-form_stacked">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="personName">Name</label>
+                            <div class="slds-form-element__control">
+                                <input type="text" id="personName" class="slds-input" placeholder="Enter name" />
+                            </div>
+                        </div>
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="personPhone">Phone</label>
+                            <div class="slds-form-element__control">
+                                <input type="tel" id="personPhone" class="slds-input" placeholder="Enter phone" />
+                            </div>
+                        </div>
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="personStatus">Health Status</label>
+                            <div class="slds-form-element__control">
+                                <select id="personStatus" class="slds-select">
+                                    <option value="">--None--</option>
+                                    <option value="Green">Green</option>
+                                    <option value="Yellow">Yellow</option>
+                                    <option value="Orange">Orange</option>
+                                    <option value="Red">Red</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="Cancel" 
+                                     onclick="{!c.closePersonModal}" 
+                                     variant="neutral"/>
+                    <lightning:button label="Save" 
+                                     onclick="{!c.savePersonRecord}" 
+                                     variant="brand"/>
+                </footer>
+            </div>
+        </div>
+    </aura:if>
+    
+    <!-- Updated Modal for Location creation -->
+    <aura:if isTrue="{!v.isLocationModalOpen}">
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        <div role="dialog" tabindex="-1" aria-labelledby="location-modal-heading" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                         onclick="{! c.closeLocationModal }"
+                                         alternativeText="Close"
+                                         variant="bare-inverse"
+                                         class="slds-modal__close"/>
+                    <h2 id="location-modal-heading" class="slds-modal__title slds-hyphenate">New Location Record</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <div class="slds-form slds-form_stacked">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="locationName">Name</label>
+                            <div class="slds-form-element__control">
+                                <lightning:input type="text" 
+                                               id="locationName" 
+                                               value="{!v.newLocation.Name}" 
+                                               label="Name" 
+                                               variant="label-hidden" 
+                                               placeholder="Enter location name" 
+                                               required="true"/>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="locationAddress">Address</label>
+                            <div class="slds-form-element__control">
+                                <lightning:textarea id="locationAddress" 
+                                                  value="{!v.newLocation.Address__c}" 
+                                                  label="Address" 
+                                                  variant="label-hidden"
+                                                  placeholder="Enter complete address" 
+                                                  required="true"/>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="locationPincode">Pincode</label>
+                            <div class="slds-form-element__control">
+                                <lightning:input type="text" 
+                                               id="locationPincode" 
+                                               value="{!v.newLocation.Pincode__c}" 
+                                               label="Pincode" 
+                                               variant="label-hidden"
+                                               placeholder="Enter pincode" 
+                                               pattern="[0-9]{5,6}"
+                                               messageWhenPatternMismatch="Please enter a valid 5-6 digit pincode"/>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="locationStatus">Status</label>
+                            <div class="slds-form-element__control">
+                                <!-- Use lightning:radioGroup for more reliable binding -->
+                                <lightning:radioGroup name="statusOptions"
+                                                   label="Status"
+                                                   options="{!v.statusOptions}"
+                                                   value="{!v.locationStatus}"
+                                                   type="radio"
+                                                   variant="label-hidden"
+                                                   onchange="{!c.handleStatusChange}"/>
+                            </div>
+                        </div>
+                        
+                        <!-- Debug information panel -->
+                        <div class="slds-box slds-theme_shade slds-m-top_small">
+                            <div class="slds-text-title">Debug Information:</div>
+                            <p>Status value: {!v.locationStatus}</p>
+                            <p>newLocation.Status__c: {!v.newLocation.Status__c}</p>
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="Cancel" 
+                                     onclick="{!c.closeLocationModal}" 
+                                     variant="neutral"/>
+                    <lightning:button label="Save" 
+                                     onclick="{!c.saveLocationRecord}" 
+                                     variant="brand"/>
+                </footer>
+            </div>
+        </div>
+    </aura:if>
 </aura:component>
