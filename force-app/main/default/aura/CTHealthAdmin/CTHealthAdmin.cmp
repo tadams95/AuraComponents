@@ -1,4 +1,4 @@
-<aura:component implements="force:appHostable,lightning:isUrlAddressable,force:hasRecordId,force:lightningQuickAction" controller="CTHealthAdminController">
+<aura:component implements="force:appHostable,lightning:isUrlAddressable,force:hasRecordId,force:lightningQuickAction" controller="CTHealthHeaderController">
     <aura:attribute name="selectedTabId" type="String" default="personTab" />
     <aura:attribute name="isPersonModalOpen" type="Boolean" default="false" />
     <aura:attribute name="isLocationModalOpen" type="Boolean" default="false" />
@@ -21,6 +21,12 @@
         {'label': 'Red', 'value': 'Red'}
     ]" />
     
+    <!-- Add health status count attributes -->
+    <aura:attribute name="greenCount" type="Integer" default="0" />
+    <aura:attribute name="yellowCount" type="Integer" default="0" />
+    <aura:attribute name="orangeCount" type="Integer" default="0" />
+    <aura:attribute name="redCount" type="Integer" default="0" />
+    
     <div class="ct-container">
         <!-- Header section with improved class names -->
         <div class="slds-page-header ct-header">
@@ -38,30 +44,30 @@
                                     </h1>
                                 </div>
                             </div>
-                            <!-- Health Status Metrics with better classes -->
+                            <!-- Health Status Metrics with dynamic counts -->
                             <div class="slds-grid slds-gutters slds-m-top_small ct-health-metrics">
                                 <div class="slds-col">
                                     <div class="ct-status-box ct-status-green">
                                         <div class="ct-status-label">Green</div>
-                                        <div class="ct-status-count">42</div>
+                                        <div class="ct-status-count">{!v.greenCount}</div>
                                     </div>
                                 </div>
                                 <div class="slds-col">
                                     <div class="ct-status-box ct-status-yellow">
                                         <div class="ct-status-label">Yellow</div>
-                                        <div class="ct-status-count">18</div>
+                                        <div class="ct-status-count">{!v.yellowCount}</div>
                                     </div>
                                 </div>
                                 <div class="slds-col">
                                     <div class="ct-status-box ct-status-orange">
                                         <div class="ct-status-label">Orange</div>
-                                        <div class="ct-status-count">7</div>
+                                        <div class="ct-status-count">{!v.orangeCount}</div>
                                     </div>
                                 </div>
                                 <div class="slds-col">
                                     <div class="ct-status-box ct-status-red">
                                         <div class="ct-status-label">Red</div>
-                                        <div class="ct-status-count">3</div>
+                                        <div class="ct-status-count">{!v.redCount}</div>
                                     </div>
                                 </div>
                             </div>
@@ -213,14 +219,15 @@
                         <div class="slds-form-element">
                             <label class="slds-form-element__label" for="locationStatus">Status</label>
                             <div class="slds-form-element__control">
-                                <!-- Use lightning:radioGroup for more reliable binding -->
+                                <!-- Fixed lightning:radioGroup implementation -->
                                 <lightning:radioGroup name="statusOptions"
-                                                   label="Status"
-                                                   options="{!v.statusOptions}"
-                                                   value="{!v.locationStatus}"
-                                                   type="radio"
-                                                   variant="label-hidden"
-                                                   onchange="{!c.handleStatusChange}"/>
+                                                    label="Status"
+                                                    variant="label-hidden"
+                                                    options="{!v.statusOptions}"
+                                                    value="{!v.locationStatus}"
+                                                    onchange="{!c.handleStatusChange}"
+                                                    type="radio"
+                                                    required="true"/>
                             </div>
                         </div>
                         

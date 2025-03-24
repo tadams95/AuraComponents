@@ -3,10 +3,13 @@
 
 .THIS.ct-container {
     padding-bottom: 2rem;
+    margin: 1rem;
 }
 
 .THIS .ct-header {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #f3f3f3;
+    border-radius: 0.25rem;
 }
 
 .THIS .ct-health-metrics {
@@ -14,52 +17,52 @@
 }
 
 .THIS .ct-status-box {
-    border-radius: 4px;
+    border-radius: 0.25rem;
     padding: 0.5rem;
     text-align: center;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    transition: transform 0.2s;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
 }
 
 .THIS .ct-status-box:hover {
     box-shadow: 0 4px 8px rgba(0,0,0,0.25), 0 2px 4px rgba(0,0,0,0.22);
-    transform: translateY(-2px);
+    transform: scale(1.05);
 }
 
 .THIS .ct-status-label {
     font-size: 0.875rem;
-    font-weight: 700;
 }
 
 .THIS .ct-status-count {
-    font-size: 1.25rem;
-    font-weight: 300;
+    font-size: 1.5rem;
+    font-weight: 700;
     margin-top: 0.25rem;
 }
 
 .THIS .ct-status-green {
-    background-color: #4bca81;
-    color: white;
+    background-color: #4CAF50;
 }
 
 .THIS .ct-status-yellow {
-    background-color: #FFE282;
-    color: #514F39;
+    background-color: #FFEB3B;
+    color: #333;
 }
 
 .THIS .ct-status-orange {
-    background-color: #FF9E2C;
-    color: white;
+    background-color: #FF9800;
 }
 
 .THIS .ct-status-red {
-    background-color: #e53935;
-    color: white;
+    background-color: #F44336;
 }
 
 .THIS .ct-button-add {
     box-shadow: 0 1px 3px rgba(0,0,0,0.12);
     transition: all 0.2s ease-in-out;
+    margin-right: 0.75rem;
 }
 
 .THIS .ct-button-add:hover {
@@ -67,8 +70,9 @@
 }
 
 .THIS .ct-tabs-container {
-    border-radius: 4px;
+    border-radius: 0.25rem;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    background-color: white;
 }
 
 .THIS .ct-tab-content {
