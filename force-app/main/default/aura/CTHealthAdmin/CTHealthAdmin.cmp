@@ -5,6 +5,9 @@
     
     <!-- Fix the newLocation attribute definition -->
     <aura:attribute name="newLocation" type="Object"/>
+    <!-- Add newPerson attribute -->
+    <aura:attribute name="newPerson" type="Object"/>
+    <aura:attribute name="personStatus" type="String" default="" />
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     
     <!-- Add debug attribute -->
@@ -26,6 +29,9 @@
     <aura:attribute name="yellowCount" type="Integer" default="0" />
     <aura:attribute name="orangeCount" type="Integer" default="0" />
     <aura:attribute name="redCount" type="Integer" default="0" />
+    
+    <!-- Add spinner attribute -->
+    <aura:attribute name="showSpinner" type="Boolean" default="false" />
     
     <div class="ct-container">
         <!-- Header section with improved class names -->
@@ -89,6 +95,17 @@
             </div>
         </div>
         
+        <!-- Add a spinner component -->
+        <aura:if isTrue="{!v.showSpinner}">
+            <div class="slds-spinner_container">
+                <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </aura:if>
+        
         <!-- Tabs section with improved spacing -->
         <div class="slds-card slds-m-top_medium ct-tabs-container">
             <lightning:tabset selectedTabId="{!v.selectedTabId}" onselect="{!c.handleTabChange}" class="ct-tabs">
@@ -122,31 +139,62 @@
                     <h2 id="person-modal-heading" class="slds-modal__title slds-hyphenate">New Person Record</h2>
                 </header>
                 <div class="slds-modal__content slds-p-around_medium">
-                    <!-- Here you would include form fields for Person__c creation -->
+                    <!-- Updated form fields for Person__c creation with proper bindings -->
                     <div class="slds-form slds-form_stacked">
                         <div class="slds-form-element">
                             <label class="slds-form-element__label" for="personName">Name</label>
                             <div class="slds-form-element__control">
-                                <input type="text" id="personName" class="slds-input" placeholder="Enter name" />
+                                <lightning:input type="text" 
+                                               id="personName" 
+                                               value="{!v.newPerson.Name}" 
+                                               label="Name" 
+                                               variant="label-hidden"
+                                               placeholder="Enter name" 
+                                               required="true" />
                             </div>
                         </div>
                         <div class="slds-form-element">
                             <label class="slds-form-element__label" for="personPhone">Phone</label>
                             <div class="slds-form-element__control">
-                                <input type="tel" id="personPhone" class="slds-input" placeholder="Enter phone" />
+                                <lightning:input type="tel" 
+                                               id="personPhone" 
+                                               value="{!v.newPerson.Mobile__c}" 
+                                               label="Phone" 
+                                               variant="label-hidden"
+                                               placeholder="Enter phone" 
+                                               required="true" />
                             </div>
                         </div>
                         <div class="slds-form-element">
                             <label class="slds-form-element__label" for="personStatus">Health Status</label>
                             <div class="slds-form-element__control">
-                                <select id="personStatus" class="slds-select">
-                                    <option value="">--None--</option>
-                                    <option value="Green">Green</option>
-                                    <option value="Yellow">Yellow</option>
-                                    <option value="Orange">Orange</option>
-                                    <option value="Red">Red</option>
-                                </select>
+                                <lightning:radioGroup name="personStatusOptions"
+                                                    label="Status"
+                                                    variant="label-hidden"
+                                                    options="{!v.statusOptions}"
+                                                    value="{!v.personStatus}"
+                                                    onchange="{!c.handlePersonStatusChange}"
+                                                    type="radio"
+                                                    required="true"/>
                             </div>
+                        </div>
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="personEmail">Email</label>
+                            <div class="slds-form-element__control">
+                                <lightning:input type="email" 
+                                               id="personEmail" 
+                                               value="{!v.newPerson.Email__c}" 
+                                               label="Email" 
+                                               variant="label-hidden"
+                                               placeholder="Enter email" />
+                            </div>
+                        </div>
+                        
+                        <!-- Debug information for person status -->
+                        <div class="slds-box slds-theme_shade slds-m-top_small">
+                            <div class="slds-text-title">Debug Information:</div>
+                            <p>Selected status: {!v.personStatus}</p>
+                            <p>Person Health_Status__c: {!v.newPerson.Health_Status__c}</p>
                         </div>
                     </div>
                 </div>
