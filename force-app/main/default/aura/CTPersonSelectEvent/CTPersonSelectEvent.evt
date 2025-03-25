@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="Event to notify when a person record is selected">
+    <aura:attribute name="recordId" type="String" description="ID of the selected person record"/>
+    <aura:attribute name="healthStatus" type="String" description="Health status of the selected person"/>
+</aura:event>

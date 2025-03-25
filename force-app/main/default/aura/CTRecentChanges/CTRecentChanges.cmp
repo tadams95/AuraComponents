@@ -8,6 +8,9 @@
     <aura:attribute name="isLoading" type="Boolean" default="false"/>
     <aura:attribute name="emptyMessage" type="String" default="No recent changes found"/>
     
+    <!-- Fix for event registration - change how we register the event -->
+    <!-- Use the APPLICATION event without registering it (since it's an application event) -->
+    
     <!-- Handlers -->
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     
@@ -49,7 +52,8 @@
                     data="{!v.data}"
                     columns="{!v.columns}"
                     hideCheckboxColumn="true"
-                    class="ct-data-table"/>
+                    class="ct-data-table"
+                    onrowaction="{!c.handleRowAction}"/>
                 <aura:set attribute="else">
                     <div class="slds-illustration slds-illustration_small slds-p-around_small">
                         <div class="slds-text-color_weak slds-text-align_center">{!v.emptyMessage}</div>

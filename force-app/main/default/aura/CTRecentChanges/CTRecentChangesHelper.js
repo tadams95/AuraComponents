@@ -27,6 +27,17 @@
                         hour: '2-digit',
                         minute: '2-digit'
                     }
+                },
+                {
+                    label: 'View/Update', 
+                    type: 'button', 
+                    initialWidth: 135,
+                    typeAttributes: { 
+                        label: 'View/Update', 
+                        name: 'view_update', 
+                        title: 'Click to view or update record', 
+                        variant: 'brand'
+                    }
                 }
             ];
         } else if (recordType === 'location') {
@@ -54,6 +65,17 @@
                         day: '2-digit',
                         hour: '2-digit',
                         minute: '2-digit'
+                    }
+                },
+                {
+                    label: 'View/Update', 
+                    type: 'button', 
+                    initialWidth: 135,
+                    typeAttributes: { 
+                        label: 'View/Update', 
+                        name: 'view_update', 
+                        title: 'Click to view or update record', 
+                        variant: 'brand'
                     }
                 }
             ];

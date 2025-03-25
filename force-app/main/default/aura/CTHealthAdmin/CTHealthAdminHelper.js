@@ -359,5 +359,216 @@
         });
         
         $A.enqueueAction(action);
+    },
+    
+    fetchPersonRecord: function(component, recordId) {
+        // Call apex to get the person record
+        const action = component.get('c.getPersonById');
+        action.setParams({
+            personId: recordId
+        });
+        
+        action.setCallback(this, function(response) {
+            const state = response.getState();
+            if (state === 'SUCCESS') {
+                const personRecord = response.getReturnValue();
+                
+                // Set the person record in the component
+                component.set('v.editPersonRecord', personRecord);
+                
+                // Open the edit modal
+                component.set('v.isPersonEditModalOpen', true);
+            } else if (state === 'ERROR') {
+                const errors = response.getError();
+                console.error('Error fetching person record:', errors);
+                
+                // Show error message
+                let errorMsg = 'An error occurred while fetching the record.';
+                if (errors && errors[0] && errors[0].message) {
+                    errorMsg = errors[0].message;
+                }
+                this.showToast('Error', errorMsg, 'error');
+            }
+            
+            // Hide spinner
+            component.set('v.showSpinner', false);
+        });
+        
+        $A.enqueueAction(action);
+    },
+    
+    updatePersonRecord: function(component) {
+        // Show spinner while saving
+        component.set('v.showSpinner', true);
+        
+        // Get the person record from component
+        const person = component.get('v.editPersonRecord');
+        
+        // Simple validation - check that required fields are filled
+        if (!person.Name || !person.Mobile__c || !person.Health_Status__c) {
+            // Show error message for required fields
+            this.showToast('Error', 'Please fill in all required fields', 'error');
+            component.set('v.showSpinner', false);
+            return;
+        }
+        
+        // Call apex to update the record
+        const action = component.get('c.updatePerson');
+        action.setParams({
+            personRecord: person
+        });
+        
+        action.setCallback(this, function(response) {
+            const state = response.getState();
+            if (state === 'SUCCESS') {
+                // Close the modal
+                component.set('v.isPersonEditModalOpen', false);
+                
+                // Show success message
+                this.showToast('Success', 'Person record updated successfully', 'success');
+                
+                // Reset the form
+                component.set('v.editPersonRecord', {});
+                component.set('v.editPersonStatus', '');
+                
+                // Refresh the health status counts
+                this.fetchHealthStatusCounts(component);
+                
+                // Refresh recent changes if on person tab
+                if (component.get('v.selectedTabId') === 'personTab') {
+                    // Find and refresh the CTRecentChanges component
+                    const recentChangesComponent = component.find('personRecentChanges');
+                    if (recentChangesComponent) {
+                        recentChangesComponent.refresh();
+                    }
+                }
+            } else if (state === 'ERROR') {
+                const errors = response.getError();
+                console.error('Error updating person record:', errors);
+                
+                // Show error message
+                let errorMsg = 'An error occurred while updating the record.';
+                if (errors && errors[0] && errors[0].message) {
+                    errorMsg = errors[0].message;
+                }
+                this.showToast('Error', errorMsg, 'error');
+            }
+            
+            // Hide spinner
+            component.set('v.showSpinner', false);
+        });
+        
+        $A.enqueueAction(action);
+    },
+    
+    fetchLocationRecord: function(component, recordId) {
+        console.log('Fetching location record with ID: ' + recordId);
+        
+        // Call apex to get the location record
+        const action = component.get('c.getLocationById');
+        action.setParams({
+            locationId: recordId
+        });
+        
+        action.setCallback(this, function(response) {
+            const state = response.getState();
+            console.log('Location fetch response state: ' + state);
+            
+            if (state === 'SUCCESS') {
+                const locationRecord = response.getReturnValue();
+                console.log('Location record retrieved: ', JSON.stringify(locationRecord));
+                
+                // Set the location record in the component
+                component.set('v.editLocationRecord', locationRecord);
+                
+                // Set the status in the edit field
+                component.set('v.editLocationStatus', locationRecord.Status__c);
+                
+                // Open the edit modal
+                component.set('v.isLocationEditModalOpen', true);
+                
+                console.log('Location edit modal should be open now');
+            } else if (state === 'ERROR') {
+                const errors = response.getError();
+                console.error('Error fetching location record:', errors);
+                
+                // Show error message
+                let errorMsg = 'An error occurred while fetching the record.';
+                if (errors && errors[0] && errors[0].message) {
+                    errorMsg = errors[0].message;
+                }
+                this.showToast('Error', errorMsg, 'error');
+            }
+            
+            // Hide spinner
+            component.set('v.showSpinner', false);
+        });
+        
+        console.log('Sending request to server to fetch location record');
+        $A.enqueueAction(action);
+    },
+    
+    updateLocationRecord: function(component) {
+        // Show spinner while saving
+        component.set('v.showSpinner', true);
+        
+        // Get the location record from component
+        const location = component.get('v.editLocationRecord');
+        
+        // Simple validation - check that required fields are filled
+        if (!location.Name || !location.Address__c || !location.Status__c) {
+            // Show error message for required fields
+            this.showToast('Error', 'Please fill in all required fields', 'error');
+            component.set('v.showSpinner', false);
+            return;
+        }
+        
+        // Call apex to update the record
+        const action = component.get('c.updateLocation');
+        action.setParams({
+            locationRecord: location
+        });
+        
+        action.setCallback(this, function(response) {
+            const state = response.getState();
+            if (state === 'SUCCESS') {
+                // Close the modal
+                component.set('v.isLocationEditModalOpen', false);
+                
+                // Show success message
+                this.showToast('Success', 'Location record updated successfully', 'success');
+                
+                // Reset the form
+                component.set('v.editLocationRecord', {});
+                component.set('v.editLocationStatus', '');
+                
+                // Refresh the health status counts
+                this.fetchHealthStatusCounts(component);
+                
+                // Refresh recent changes if on location tab
+                if (component.get('v.selectedTabId') === 'locationTab') {
+                    // Find and refresh the CTRecentChanges component
+                    const recentChangesComponent = component.find('locationRecentChanges');
+                    if (recentChangesComponent) {
+                        recentChangesComponent.refresh();
+                    }
+                }
+            } else if (state === 'ERROR') {
+                const errors = response.getError();
+                console.error('Error updating location record:', errors);
+                
+                // Show error message
+                let errorMsg = 'An error occurred while updating the record.';
+                if (errors && errors[0] && errors[0].message) {
+                    errorMsg = errors[0].message;
+                }
+                this.showToast('Error', errorMsg, 'error');
+            }
+            
+            // Hide spinner
+            component.set('v.showSpinner', false);
+        });
+        
+        $A.enqueueAction(action);
     }
 })

@@ -33,6 +33,22 @@
     <!-- Add spinner attribute -->
     <aura:attribute name="showSpinner" type="Boolean" default="false" />
     
+    <!-- Add attributes for person edit -->
+    <aura:attribute name="isPersonEditModalOpen" type="Boolean" default="false" />
+    <aura:attribute name="editPersonRecord" type="Object" />
+    <aura:attribute name="editPersonId" type="String" />
+    <aura:attribute name="editPersonStatus" type="String" default="" />
+    
+    <!-- Add attributes for location edit -->
+    <aura:attribute name="isLocationEditModalOpen" type="Boolean" default="false" />
+    <aura:attribute name="editLocationRecord" type="Object" />
+    <aura:attribute name="editLocationId" type="String" />
+    <aura:attribute name="editLocationStatus" type="String" default="" />
+    
+    <!-- Register handlers for both events -->
+    <aura:handler event="c:CTPersonSelectEvent" action="{!c.handlePersonSelect}" />
+    <aura:handler event="c:CTLocationSelectEvent" action="{!c.handleLocationSelect}" />
+    
     <div class="ct-container">
         <!-- Header section with improved class names -->
         <div class="slds-page-header ct-header">
@@ -295,6 +311,176 @@
                                      variant="neutral"/>
                     <lightning:button label="Save" 
                                      onclick="{!c.saveLocationRecord}" 
+                                     variant="brand"/>
+                </footer>
+            </div>
+        </div>
+    </aura:if>
+    
+    <!-- Add Modal for Person Edit -->
+    <aura:if isTrue="{!v.isPersonEditModalOpen}">
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        <div role="dialog" tabindex="-1" aria-labelledby="person-edit-modal-heading" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                         onclick="{! c.closePersonEditModal }"
+                                         alternativeText="Close"
+                                         variant="bare-inverse"
+                                         class="slds-modal__close"/>
+                    <h2 id="person-edit-modal-heading" class="slds-modal__title slds-hyphenate">Update Person Record</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <!-- Edit form fields for Person__c -->
+                    <div class="slds-form slds-form_stacked">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="editPersonName">Name</label>
+                            <div class="slds-form-element__control">
+                                <lightning:input type="text" 
+                                               id="editPersonName" 
+                                               value="{!v.editPersonRecord.Name}" 
+                                               label="Name" 
+                                               variant="label-hidden"
+                                               placeholder="Enter name" 
+                                               required="true" />
+                            </div>
+                        </div>
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="editPersonPhone">Phone</label>
+                            <div class="slds-form-element__control">
+                                <lightning:input type="tel" 
+                                               id="editPersonPhone" 
+                                               value="{!v.editPersonRecord.Mobile__c}" 
+                                               label="Phone" 
+                                               variant="label-hidden"
+                                               placeholder="Enter phone" 
+                                               required="true" />
+                            </div>
+                        </div>
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="editPersonStatus">Health Status</label>
+                            <div class="slds-form-element__control">
+                                <lightning:radioGroup name="editPersonStatusOptions"
+                                                    label="Status"
+                                                    variant="label-hidden"
+                                                    options="{!v.statusOptions}"
+                                                    value="{!v.editPersonStatus}"
+                                                    onchange="{!c.handleEditPersonStatusChange}"
+                                                    type="radio"
+                                                    required="true"/>
+                            </div>
+                        </div>
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="editPersonEmail">Email</label>
+                            <div class="slds-form-element__control">
+                                <lightning:input type="email" 
+                                               id="editPersonEmail" 
+                                               value="{!v.editPersonRecord.Email__c}" 
+                                               label="Email" 
+                                               variant="label-hidden"
+                                               placeholder="Enter email" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="Cancel" 
+                                     onclick="{!c.closePersonEditModal}" 
+                                     variant="neutral"/>
+                    <lightning:button label="Save" 
+                                     onclick="{!c.updatePersonRecord}" 
+                                     variant="brand"/>
+                </footer>
+            </div>
+        </div>
+    </aura:if>
+    
+    <!-- Add Modal for Location Edit -->
+    <aura:if isTrue="{!v.isLocationEditModalOpen}">
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        <div role="dialog" tabindex="-1" aria-labelledby="location-edit-modal-heading" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                         onclick="{! c.closeLocationEditModal }"
+                                         alternativeText="Close"
+                                         variant="bare-inverse"
+                                         class="slds-modal__close"/>
+                    <h2 id="location-edit-modal-heading" class="slds-modal__title slds-hyphenate">Update Location Record</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <!-- Edit form fields for Location__c -->
+                    <div class="slds-form slds-form_stacked">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="editLocationName">Name</label>
+                            <div class="slds-form-element__control">
+                                <lightning:input type="text" 
+                                               id="editLocationName" 
+                                               value="{!v.editLocationRecord.Name}" 
+                                               label="Name" 
+                                               variant="label-hidden"
+                                               placeholder="Enter location name" 
+                                               required="true" />
+                            </div>
+                        </div>
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="editLocationAddress">Address</label>
+                            <div class="slds-form-element__control">
+                                <lightning:textarea id="editLocationAddress" 
+                                                  value="{!v.editLocationRecord.Address__c}" 
+                                                  label="Address" 
+                                                  variant="label-hidden"
+                                                  placeholder="Enter complete address" 
+                                                  required="true"/>
+                            </div>
+                        </div>
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="editLocationPincode">Pincode</label>
+                            <div class="slds-form-element__control">
+                                <lightning:input type="text" 
+                                               id="editLocationPincode" 
+                                               value="{!v.editLocationRecord.Pincode__c}" 
+                                               label="Pincode" 
+                                               variant="label-hidden"
+                                               placeholder="Enter pincode" 
+                                               pattern="[0-9]{5,6}"
+                                               messageWhenPatternMismatch="Please enter a valid 5-6 digit pincode"/>
+                            </div>
+                        </div>
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="editLocationStatus">Status</label>
+                            <div class="slds-form-element__control">
+                                <lightning:radioGroup name="editLocationStatusOptions"
+                                                    label="Status"
+                                                    variant="label-hidden"
+                                                    options="{!v.statusOptions}"
+                                                    value="{!v.editLocationStatus}"
+                                                    onchange="{!c.handleEditLocationStatusChange}"
+                                                    type="radio"
+                                                    required="true"/>
+                            </div>
+                        </div>
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="editLocationRedScore">Red Score</label>
+                            <div class="slds-form-element__control">
+                                <lightning:input type="number" 
+                                               id="editLocationRedScore" 
+                                               value="{!v.editLocationRecord.Red_Score__c}" 
+                                               label="Red Score" 
+                                               variant="label-hidden"
+                                               placeholder="Enter red score" 
+                                               step="0.01"
+                                               min="0"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button label="Cancel" 
+                                     onclick="{!c.closeLocationEditModal}" 
+                                     variant="neutral"/>
+                    <lightning:button label="Save" 
+                                     onclick="{!c.updateLocationRecord}" 
                                      variant="brand"/>
                 </footer>
             </div>

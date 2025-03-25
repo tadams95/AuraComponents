@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="Event to notify when a location record is selected">
+    <aura:attribute name="recordId" type="String" description="ID of the selected location record"/>
+    <aura:attribute name="status" type="String" description="Status of the selected location"/>
+</aura:event>

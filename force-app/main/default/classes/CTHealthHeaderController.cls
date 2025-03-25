@@ -88,4 +88,68 @@ public with sharing class CTHealthHeaderController {
             throw new AuraHandledException('Error creating Location record: ' + e.getMessage());
         }
     }
+    
+    @AuraEnabled
+    public static Person__c getPersonById(String personId) {
+        try {
+            return [SELECT Id, Name, Mobile__c, Health_Status__c, Status_Update_Date__c, Token__c 
+                    FROM Person__c 
+                    WHERE Id = :personId
+                    LIMIT 1];
+        } catch(Exception e) {
+            throw new AuraHandledException('Error retrieving Person record: ' + e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static Id updatePerson(Person__c personRecord) {
+        try {
+            if(personRecord != null && personRecord.Id != null) {
+                // Set status update date to now
+                personRecord.Status_Update_Date__c = Date.today();
+                
+                // Update the record
+                update personRecord;
+                return personRecord.Id;
+            }
+            return null;
+        } catch(Exception e) {
+            throw new AuraHandledException('Error updating Person record: ' + e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static Location__c getLocationById(String locationId) {
+        try {
+            System.debug('Fetching location with ID: ' + locationId);
+            
+            Location__c location = [SELECT Id, Name, Address__c, Pincode__c, Status__c, Status_Update_Date__c, Red_Score__c
+                    FROM Location__c 
+                    WHERE Id = :locationId
+                    LIMIT 1];
+            
+            System.debug('Location retrieved: ' + location);
+            return location;
+        } catch(Exception e) {
+            System.debug('Error retrieving Location record: ' + e.getMessage());
+            throw new AuraHandledException('Error retrieving Location record: ' + e.getMessage());
+        }
+    }
+    
+    @AuraEnabled
+    public static Id updateLocation(Location__c locationRecord) {
+        try {
+            if(locationRecord != null && locationRecord.Id != null) {
+                // Set status update date to now
+                locationRecord.Status_Update_Date__c = Date.today();
+                
+                // Update the record
+                update locationRecord;
+                return locationRecord.Id;
+            }
+            return null;
+        } catch(Exception e) {
+            throw new AuraHandledException('Error updating Location record: ' + e.getMessage());
+        }
+    }
 }
